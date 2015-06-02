@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"path"
 	"strings"
 )
 
@@ -36,4 +38,17 @@ func NewToken(user, pass string) (*Token, error) {
 	json.NewDecoder(res.Body).Decode(t)
 
 	return t, nil
+}
+
+func (t *Token) Save() error {
+	return ioutil.WriteFile(t.filePath(), []byte(t.Token), 0644)
+}
+
+func (_ *Token) filePath() string {
+	fname := "gfm-viewer"
+	if xdg := os.Getenv("XDG_CACHE_HOME"); xdg != "" {
+		return path.Join(xdg, fname)
+	} else {
+		return path.Join(os.Getenv("HOME"), ".cache", fname)
+	}
 }
