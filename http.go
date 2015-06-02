@@ -33,6 +33,7 @@ func NewServer() *Server {
 
 	// TODO: index
 	r.HandleFunc("/files/{path}", s.ServeFile)
+	r.HandleFunc("/", s.indexHandler)
 	return s
 }
 
@@ -56,6 +57,19 @@ func (s *Server) Get(path string) (string, bool) {
 	return html, ok
 }
 
+func (s *Server) Index() []string {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	res := make([]string, 0, len(s.pages))
+
+	for path := range s.pages {
+		res = append(res, path)
+	}
+
+	return res
+}
+
 func (s *Server) ServeFile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	path := vars["path"]
@@ -68,7 +82,7 @@ func (s *Server) ServeFile(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(html))
 }
 
-func indexHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 	tpl, err := ace.Load("assets/index", "", &ace.Options{
 		DynamicReload: env.DEBUG,
 		Asset:         Asset,
@@ -77,7 +91,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = tpl.Execute(w, nil)
+	err = tpl.Execute(w, s.Index())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
