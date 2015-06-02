@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"sort"
 	"strings"
@@ -26,7 +28,9 @@ func NewServer() *Server {
 		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			path := r.URL.Path
 			if path == "/" || path == "/index.html" {
-				s.indexHandler(w, r)
+				s.beforeAuthHandler(w, r)
+			} else if path == "/auth" {
+				s.authHandler(w, r)
 			} else if strings.HasPrefix(path, "/files") {
 				s.ServeFile(w, r)
 			} else {
@@ -90,6 +94,20 @@ func (s *Server) ServeFile(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(html))
 }
 
+func (s *Server) authHandler(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	v := r.PostForm
+	user := v.Get("username")
+	pass := v.Get("password")
+
+	token, err := getToken(user, pass)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write([]byte(token))
+}
+
 func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 	loadAce(w, "index", s.Index())
 }
@@ -112,4 +130,32 @@ func loadAce(w http.ResponseWriter, action string, data interface{}) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+func getToken(user, pass string) (string, error) {
+	req, err := http.NewRequest(
+		"POST",
+		"https://api.github.com/authorizations",
+		strings.NewReader(`{"note":"gfm-viewer"}`),
+	)
+	if err != nil {
+		return "", err
+	}
+	req.SetBasicAuth(user, pass)
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer res.Body.Close()
+	if res.StatusCode != 200 {
+		body, _ := ioutil.ReadAll(res.Body)
+		return "", fmt.Errorf(string(body))
+	}
+
+	t := struct {
+		Token string `json:"token"`
+	}{}
+	json.NewDecoder(res.Body).Decode(&t)
+
+	return t.Token, nil
 }

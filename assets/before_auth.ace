@@ -1,0 +1,18 @@
+= doctype html
+html lang=en
+  head
+    title gfm-viewer
+
+  body
+    h1 gfm-viewer
+
+    h2 Auth
+
+    form action="/auth" method="post"
+      label for="username" User Name
+      input type="text" id="username" name="username"
+
+      label for="password" Password
+      input type="password" id="password" name="password"
+
+      input type="submit" value="Submit"
