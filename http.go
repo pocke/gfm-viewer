@@ -3,23 +3,19 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"sort"
 	"strings"
-	"sync"
 
 	"github.com/pocke/gfm-viewer/env"
 	"github.com/yosssi/ace"
 )
 
 type Server struct {
-	pages map[string]string
-	mu    *sync.RWMutex
+	storage *Storage
 }
 
 func NewServer() *Server {
 	s := &Server{
-		pages: make(map[string]string),
-		mu:    &sync.RWMutex{},
+		storage: &Storage{},
 	}
 
 	go func() {
@@ -43,48 +39,9 @@ func NewServer() *Server {
 	return s
 }
 
-func (s *Server) Add(path, html string) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	s.pages[path] = html
-}
-
-// Update same as Add.
-func (s *Server) Update(path, html string) {
-	s.Add(path, html)
-}
-
-func (s *Server) Get(path string) (string, bool) {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
-	html, ok := s.pages[path]
-	if ok {
-		return html, ok
-	} else {
-		html, ok := s.pages["/"+path]
-		return html, ok
-	}
-}
-
-func (s *Server) Index() []string {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
-	res := make([]string, 0, len(s.pages))
-
-	for path := range s.pages {
-		res = append(res, path)
-	}
-
-	sort.Strings(res)
-	return res
-}
-
 func (s *Server) ServeFile(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimLeft(r.URL.Path, "/files")
-	html, ok := s.Get(path)
+	html, ok := s.storage.Get(path)
 	if !ok {
 		http.Error(w, fmt.Sprintf("%s page not found", path), http.StatusNotFound)
 		return
@@ -107,7 +64,7 @@ func (s *Server) authHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
-	loadAce(w, "index", s.Index())
+	loadAce(w, "index", s.storage.Index())
 }
 
 func (s *Server) beforeAuthHandler(w http.ResponseWriter, r *http.Request) {

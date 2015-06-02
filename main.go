@@ -15,16 +15,16 @@ func main() {
 	for _, f := range files {
 		md, err := ioutil.ReadFile(f)
 		if err != nil {
-			s.Add(f, err.Error())
+			s.storage.Add(f, err.Error())
 			continue
 		}
 
 		html, err := md2html(string(md))
 		if err != nil {
-			s.Add(f, err.Error())
+			s.storage.Add(f, err.Error())
 			continue
 		}
-		s.Add(f, html)
+		s.storage.Add(f, html)
 	}
 
 	select {}
