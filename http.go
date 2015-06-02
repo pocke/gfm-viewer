@@ -91,7 +91,15 @@ func (s *Server) ServeFile(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
-	tpl, err := ace.Load("assets/index", "", &ace.Options{
+	loadAce(w, "index", s.Index())
+}
+
+func (s *Server) beforeAuthHandler(w http.ResponseWriter, r *http.Request) {
+	loadAce(w, "before_auth", nil)
+}
+
+func loadAce(w http.ResponseWriter, action string, data interface{}) {
+	tpl, err := ace.Load("assets/"+action, "", &ace.Options{
 		DynamicReload: env.DEBUG,
 		Asset:         Asset,
 	})
@@ -99,7 +107,7 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = tpl.Execute(w, s.Index())
+	err = tpl.Execute(w, data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
