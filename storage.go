@@ -8,6 +8,15 @@ import (
 type Storage struct {
 	files map[string]string
 	mu    *sync.RWMutex
+
+	token *Token
+}
+
+func NewStorage() *Storage {
+	s := &Storage{
+		files: make(map[string]string),
+	}
+	return s
 }
 
 func (s *Storage) Add(path, html string) {

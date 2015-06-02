@@ -15,7 +15,7 @@ type Server struct {
 
 func NewServer() *Server {
 	s := &Server{
-		storage: &Storage{},
+		storage: NewStorage(),
 	}
 
 	go func() {
@@ -55,12 +55,11 @@ func (s *Server) authHandler(w http.ResponseWriter, r *http.Request) {
 	user := v.Get("username")
 	pass := v.Get("password")
 
-	token, err := NewToken(user, pass)
+	err := s.storage.token.Init(user, pass)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.Write([]byte(token.Token))
 }
 
 func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {

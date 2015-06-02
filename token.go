@@ -14,33 +14,32 @@ type Token struct {
 	Token string `json:"token"`
 }
 
-func NewToken(user, pass string) (*Token, error) {
+func (t *Token) Init(user, pass string) error {
 	req, err := http.NewRequest(
 		"POST",
 		"https://api.github.com/authorizations",
 		strings.NewReader(`{"note":"gfm-viewer"}`),
 	)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	req.SetBasicAuth(user, pass)
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer res.Body.Close()
 	if res.StatusCode != 200 {
 		body, _ := ioutil.ReadAll(res.Body)
-		return nil, fmt.Errorf(string(body))
+		return fmt.Errorf(string(body))
 	}
 
-	t := &Token{}
 	json.NewDecoder(res.Body).Decode(t)
 
-	return t, nil
+	return nil
 }
 
-func (t *Token) Save() error {
+func (t *Token) SaveFile() error {
 	return ioutil.WriteFile(t.filePath(), []byte(t.Token), 0644)
 }
 
