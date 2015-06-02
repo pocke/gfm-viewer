@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -11,18 +10,24 @@ import (
 func main() {
 	files := os.Args[1:]
 
+	s := NewServer()
+
 	for _, f := range files {
 		md, err := ioutil.ReadFile(f)
 		if err != nil {
+			s.Add(f, err.Error())
 			continue
 		}
 
 		html, err := md2html(string(md))
 		if err != nil {
+			s.Add(f, err.Error())
 			continue
 		}
-		fmt.Print(html)
+		s.Add(f, html)
 	}
+
+	select {}
 }
 
 func md2html(md string) (string, error) {

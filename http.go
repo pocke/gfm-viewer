@@ -6,6 +6,8 @@ import (
 	"sync"
 
 	"github.com/gorilla/mux"
+	"github.com/pocke/gfm-viewer/env"
+	"github.com/yosssi/ace"
 )
 
 type Server struct {
@@ -23,7 +25,11 @@ func NewServer() *Server {
 		router: r,
 	}
 
-	go func() { http.Handle("/", r) }()
+	go func() {
+		http.Handle("/", r)
+		// TODO: port
+		http.ListenAndServe(":1124", nil)
+	}()
 
 	// TODO: index
 	r.HandleFunc("/files/{path}", s.ServeFile)
@@ -60,4 +66,20 @@ func (s *Server) ServeFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Write([]byte(html))
+}
+
+func indexHandler(w http.ResponseWriter, r *http.Request) {
+	tpl, err := ace.Load("assets/index", "", &ace.Options{
+		DynamicReload: env.DEBUG,
+		Asset:         Asset,
+	})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = tpl.Execute(w, nil)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
