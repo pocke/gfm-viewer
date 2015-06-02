@@ -3,37 +3,40 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"sync"
 
-	"github.com/gorilla/mux"
 	"github.com/pocke/gfm-viewer/env"
 	"github.com/yosssi/ace"
 )
 
 type Server struct {
-	pages  map[string]string
-	mu     *sync.RWMutex
-	router *mux.Router
+	pages map[string]string
+	mu    *sync.RWMutex
 }
 
 func NewServer() *Server {
-	r := mux.NewRouter()
-
 	s := &Server{
-		pages:  make(map[string]string),
-		mu:     &sync.RWMutex{},
-		router: r,
+		pages: make(map[string]string),
+		mu:    &sync.RWMutex{},
 	}
 
 	go func() {
-		http.Handle("/", r)
+		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			path := r.URL.Path
+			if path == "/" || path == "/index.html" {
+				s.indexHandler(w, r)
+			} else if strings.HasPrefix(path, "/files") {
+				s.ServeFile(w, r)
+			} else {
+				http.Error(w, "404 Not Found", http.StatusNotFound)
+				return
+			}
+		})
 		// TODO: port
 		http.ListenAndServe(":1124", nil)
 	}()
 
-	// TODO: index
-	r.HandleFunc("/files/{path}", s.ServeFile)
-	r.HandleFunc("/", s.indexHandler)
 	return s
 }
 
@@ -54,7 +57,12 @@ func (s *Server) Get(path string) (string, bool) {
 	defer s.mu.RUnlock()
 
 	html, ok := s.pages[path]
-	return html, ok
+	if ok {
+		return html, ok
+	} else {
+		html, ok := s.pages["/"+path]
+		return html, ok
+	}
 }
 
 func (s *Server) Index() []string {
@@ -71,9 +79,7 @@ func (s *Server) Index() []string {
 }
 
 func (s *Server) ServeFile(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	path := vars["path"]
-
+	path := strings.TrimLeft(r.URL.Path, "/files")
 	html, ok := s.Get(path)
 	if !ok {
 		http.Error(w, fmt.Sprintf("%s page not found", path), http.StatusNotFound)
