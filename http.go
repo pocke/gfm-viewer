@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"sort"
 	"strings"
 	"sync"
 
@@ -75,6 +76,7 @@ func (s *Server) Index() []string {
 		res = append(res, path)
 	}
 
+	sort.Strings(res)
 	return res
 }
 
