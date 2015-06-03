@@ -3,8 +3,6 @@ package main
 import (
 	"io/ioutil"
 	"os"
-
-	"github.com/google/go-github/github"
 )
 
 func main() {
@@ -19,7 +17,7 @@ func main() {
 			continue
 		}
 
-		html, err := md2html(string(md))
+		html, err := s.storage.md2html(string(md))
 		if err != nil {
 			s.storage.Add(f, err.Error())
 			continue
@@ -28,10 +26,4 @@ func main() {
 	}
 
 	select {}
-}
-
-func md2html(md string) (string, error) {
-	client := github.NewClient(nil)
-	html, _, err := client.Markdown(md, nil)
-	return html, err
 }

@@ -1,8 +1,11 @@
 package main
 
 import (
+	"net/http"
 	"sort"
 	"sync"
+
+	"github.com/google/go-github/github"
 )
 
 type Storage struct {
@@ -15,6 +18,8 @@ type Storage struct {
 func NewStorage() *Storage {
 	s := &Storage{
 		files: make(map[string]string),
+		token: &Token{},
+		mu:    &sync.RWMutex{},
 	}
 	return s
 }
@@ -51,4 +56,12 @@ func (s *Storage) Index() []string {
 
 	sort.Strings(res)
 	return res
+}
+
+func (s *Storage) md2html(md string) (string, error) {
+	client := github.NewClient(&http.Client{
+		Transport: s.token,
+	})
+	html, _, err := client.Markdown(md, nil)
+	return html, err
 }
