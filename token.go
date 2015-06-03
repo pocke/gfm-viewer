@@ -42,6 +42,23 @@ func (t *Token) SaveFile() error {
 	return ioutil.WriteFile(t.filePath(), []byte(t.T), 0644)
 }
 
+func (t *Token) LoadFile() error {
+	f, err := ioutil.ReadFile(t.filePath())
+	if err != nil {
+		return err
+	}
+	t.T = string(f)
+	return nil
+}
+
+func (t *Token) hasToken() bool {
+	err := t.LoadFile()
+	if err != nil {
+		return false
+	}
+	return t.T != ""
+}
+
 func (_ *Token) filePath() string {
 	fname := "gfm-viewer"
 	if xdg := os.Getenv("XDG_CACHE_HOME"); xdg != "" {
