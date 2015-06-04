@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"sort"
@@ -13,15 +14,31 @@ type Storage struct {
 	files map[string]string
 	mu    *sync.RWMutex
 
-	token *Token
+	token   *Token
+	watcher *Watcher
 }
 
 func NewStorage() *Storage {
-	s := &Storage{
-		files: make(map[string]string),
-		token: &Token{},
-		mu:    &sync.RWMutex{},
+	w, err := NewWatcher()
+	if err != nil {
+		panic(err)
 	}
+
+	s := &Storage{
+		files:   make(map[string]string),
+		token:   &Token{},
+		mu:      &sync.RWMutex{},
+		watcher: w,
+	}
+
+	go func() {
+		ch := w.OnUpdate()
+		for {
+			fname := <-ch
+			fmt.Println(fname)
+		}
+	}()
+
 	return s
 }
 
@@ -36,22 +53,34 @@ func (s *Storage) AddFiles(paths []string) {
 		return
 	}
 
-	for _, path := range paths {
-		md, err := ioutil.ReadFile(path)
-		if err != nil {
-			s.files[path] = err.Error()
-			continue
-		}
+	err := s.watcher.AddFiles(paths)
+	if err != nil {
+		panic(err)
+	}
 
-		html, err := s.md2html(string(md))
-		if err != nil {
-			s.files[path] = html
-			continue
-		}
-		html = s.insertCSS(html)
-		s.files[path] = html
+	for _, path := range paths {
+		s.AddFile(path)
 	}
 }
+
+// without mutex
+func (s *Storage) AddFile(path string) error {
+	md, err := ioutil.ReadFile(path)
+	if err != nil {
+		s.files[path] = err.Error()
+		return err
+	}
+
+	html, err := s.md2html(string(md))
+	if err != nil {
+		s.files[path] = html
+		return err
+	}
+	html = s.insertCSS(html)
+	s.files[path] = html
+	return nil
+}
+
 func (s *Storage) UpdateAll() {
 	s.AddFiles(s.Index())
 }
