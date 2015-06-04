@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/pocke/gfm-viewer/env"
+	"github.com/pocke/hlog.go"
 	"github.com/yosssi/ace"
 )
 
@@ -19,7 +20,7 @@ func NewServer() *Server {
 	}
 
 	go func() {
-		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		f := func(w http.ResponseWriter, r *http.Request) {
 			path := r.URL.Path
 			if path == "/" || path == "/index.html" {
 				if s.storage.token.hasToken() {
@@ -35,7 +36,11 @@ func NewServer() *Server {
 				http.Error(w, "404 Not Found", http.StatusNotFound)
 				return
 			}
-		})
+		}
+		if env.DEBUG {
+			f = hlog.Wrap(f)
+		}
+		http.HandleFunc("/", f)
 		// TODO: port
 		http.ListenAndServe(":1124", nil)
 	}()
