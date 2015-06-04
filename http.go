@@ -63,7 +63,7 @@ func (s *Server) authHandler(w http.ResponseWriter, r *http.Request, _ denco.Par
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	s.storage.UpdateAll()
+	s.storage.AddAll()
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 

@@ -85,7 +85,7 @@ func (s *Storage) UpdateFile(path string) error {
 	return s.AddFile(path)
 }
 
-func (s *Storage) UpdateAll() {
+func (s *Storage) AddAll() {
 	s.AddFiles(s.Index())
 }
 
