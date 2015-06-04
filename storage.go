@@ -52,6 +52,9 @@ func (s *Storage) AddFiles(paths []string) {
 		s.files[path] = html
 	}
 }
+func (s *Storage) UpdateAll() {
+	s.AddFiles(s.Index())
+}
 
 func (s *Storage) Get(path string) (string, bool) {
 	s.mu.RLock()

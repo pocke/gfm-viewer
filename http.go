@@ -71,6 +71,8 @@ func (s *Server) authHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	s.storage.UpdateAll()
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
