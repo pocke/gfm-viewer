@@ -11,7 +11,7 @@ import (
 )
 
 type Token struct {
-	T string `json:"token"`
+	Token string `json:"token"`
 }
 
 func (t *Token) Init(user, pass string) error {
@@ -39,7 +39,7 @@ func (t *Token) Init(user, pass string) error {
 }
 
 func (t *Token) SaveFile() error {
-	return ioutil.WriteFile(t.filePath(), []byte(t.T), 0644)
+	return ioutil.WriteFile(t.filePath(), []byte(t.Token), 0644)
 }
 
 func (t *Token) LoadFile() error {
@@ -47,7 +47,7 @@ func (t *Token) LoadFile() error {
 	if err != nil {
 		return err
 	}
-	t.T = string(f)
+	t.Token = string(f)
 	return nil
 }
 
@@ -56,7 +56,7 @@ func (t *Token) hasToken() bool {
 	if err != nil {
 		return false
 	}
-	return t.T != ""
+	return t.Token != ""
 }
 
 func (_ *Token) filePath() string {
@@ -69,7 +69,7 @@ func (_ *Token) filePath() string {
 }
 
 func (t *Token) RoundTrip(req *http.Request) (*http.Response, error) {
-	req.Header.Set("Authorization", "token "+t.T)
+	req.Header.Set("Authorization", "token "+t.Token)
 
 	return http.DefaultTransport.RoundTrip(req)
 }
