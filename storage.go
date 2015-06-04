@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"sort"
@@ -35,7 +34,7 @@ func NewStorage() *Storage {
 		ch := w.OnUpdate()
 		for {
 			fname := <-ch
-			fmt.Println(fname)
+			s.UpdateFile(fname)
 		}
 	}()
 
@@ -79,6 +78,11 @@ func (s *Storage) AddFile(path string) error {
 	html = s.insertCSS(html)
 	s.files[path] = html
 	return nil
+}
+
+func (s *Storage) UpdateFile(path string) error {
+	// TODO: thrrow event to http
+	return s.AddFile(path)
 }
 
 func (s *Storage) UpdateAll() {
