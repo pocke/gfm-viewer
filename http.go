@@ -69,10 +69,8 @@ func (s *Server) authHandler(w http.ResponseWriter, r *http.Request, _ denco.Par
 
 func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request, _ denco.Params) {
 	if s.storage.token.hasToken() {
-
 		loadAce(w, "index", s.storage.Index())
 	} else {
-
 		loadAce(w, "before_auth", nil)
 	}
 }
