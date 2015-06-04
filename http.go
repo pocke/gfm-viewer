@@ -32,6 +32,8 @@ func NewServer() *Server {
 				s.authHandler(w, r)
 			} else if strings.HasPrefix(path, "/files") {
 				s.ServeFile(w, r)
+			} else if path == "/css/github-markdown.css" {
+				s.serveCSS(w, r)
 			} else {
 				http.Error(w, "404 Not Found", http.StatusNotFound)
 				return
@@ -93,4 +95,14 @@ func loadAce(w http.ResponseWriter, action string, data interface{}) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+func (s *Server) serveCSS(w http.ResponseWriter, r *http.Request) {
+	file, err := Asset("assets/github-markdown.css")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "text/css")
+	w.Write(file)
 }
