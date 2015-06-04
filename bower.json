@@ -1,0 +1,16 @@
+{
+  "name": "gfm-viewer",
+  "version": "0.0.0",
+  "homepage": "https://github.com/pocke/gfm-viewer",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "github-markdown-css": "~2.0.8"
+  }
+}
