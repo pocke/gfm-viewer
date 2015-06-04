@@ -22,7 +22,11 @@ func NewServer() *Server {
 		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			path := r.URL.Path
 			if path == "/" || path == "/index.html" {
-				s.beforeAuthHandler(w, r)
+				if s.storage.token.hasToken() {
+					s.indexHandler(w, r)
+				} else {
+					s.beforeAuthHandler(w, r)
+				}
 			} else if path == "/auth" {
 				s.authHandler(w, r)
 			} else if strings.HasPrefix(path, "/files") {

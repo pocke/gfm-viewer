@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io/ioutil"
 	"net/http"
 	"sort"
 	"sync"
@@ -24,11 +25,31 @@ func NewStorage() *Storage {
 	return s
 }
 
-func (s *Storage) Add(path, html string) {
+func (s *Storage) AddFiles(paths []string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	s.files[path] = html
+	if !s.token.hasToken() {
+		for _, path := range paths {
+			s.files[path] = ""
+		}
+		return
+	}
+
+	for _, path := range paths {
+		md, err := ioutil.ReadFile(path)
+		if err != nil {
+			s.files[path] = err.Error()
+			continue
+		}
+
+		html, err := s.md2html(string(md))
+		if err != nil {
+			s.files[path] = html
+			continue
+		}
+		s.files[path] = html
+	}
 }
 
 func (s *Storage) Get(path string) (string, bool) {
