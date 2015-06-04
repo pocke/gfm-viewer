@@ -48,6 +48,7 @@ func (s *Storage) AddFiles(paths []string) {
 			s.files[path] = html
 			continue
 		}
+		html = s.insertCSS(html)
 		s.files[path] = html
 	}
 }
@@ -85,4 +86,17 @@ func (s *Storage) md2html(md string) (string, error) {
 	})
 	html, _, err := client.Markdown(md, nil)
 	return html, err
+}
+
+func (_ *Storage) insertCSS(html string) string {
+	tags := `<!DOCTYPE html>
+<link rel="stylesheet" href="/css/github-markdown.css">
+<div class="markdown-body">
+<style>
+.markdown-body { min-width: 200px; max-width: 790px; margin: 0 auto; padding: 30px; }
+</style>
+`
+	tagEnd := `
+</div>`
+	return tags + html + tagEnd
 }
