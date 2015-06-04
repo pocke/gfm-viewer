@@ -39,14 +39,8 @@ func NewWatcher() (*Watcher, error) {
 	return res, nil
 }
 
-func (w *Watcher) AddFiles(paths []string) error {
-	for _, v := range paths {
-		err := w.w.Add(v)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+func (w *Watcher) AddFile(path string) error {
+	return w.w.Add(path)
 }
 
 // TODO: フルパスが返ってきたりしたらアレっぽい

@@ -53,12 +53,12 @@ func (s *Storage) AddFiles(paths []string) {
 		return
 	}
 
-	err := s.watcher.AddFiles(paths)
-	if err != nil {
-		panic(err)
-	}
-
 	for _, path := range paths {
+		err := s.watcher.AddFile(path)
+		if err != nil {
+			s.files[path] = err.Error()
+			continue
+		}
 		s.AddFile(path)
 	}
 }
