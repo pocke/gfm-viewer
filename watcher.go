@@ -1,11 +1,10 @@
 package main
 
-import "gopkg.in/fsnotify.v1"
+import "github.com/go-fsnotify/fsnotify"
 
 type Watcher struct {
 	w        *fsnotify.Watcher
-	onWrite  chan string
-	onRemove chan string
+	onUpdate chan string
 }
 
 func NewWatcher() (*Watcher, error) {
@@ -15,7 +14,8 @@ func NewWatcher() (*Watcher, error) {
 	}
 
 	res := &Watcher{
-		w: w,
+		w:        w,
+		onUpdate: make(chan string),
 	}
 
 	go func() {
@@ -23,11 +23,13 @@ func NewWatcher() (*Watcher, error) {
 			select {
 			case ev := <-w.Events:
 				switch ev.Op {
-				case fsnotify.Write:
-					res.onWrite <- ev.Name
+				case fsnotify.Rename:
+					continue
 				case fsnotify.Remove:
-					res.onRemove <- ev.Name
+					w.Add(ev.Name)
+					continue
 				}
+				res.onUpdate <- ev.Name
 			case err := <-w.Errors:
 				panic(err)
 			}
@@ -48,6 +50,5 @@ func (w *Watcher) AddFiles(paths []string) error {
 }
 
 // TODO: フルパスが返ってきたりしたらアレっぽい
-func (w *Watcher) OnWrite() <-chan string  { return w.onWrite }
-func (w *Watcher) OnRemove() <-chan string { return w.onRemove }
+func (w *Watcher) OnUpdate() <-chan string { return w.onUpdate }
 func (w *Watcher) Close() error            { return w.w.Close() }
