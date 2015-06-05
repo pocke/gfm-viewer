@@ -13,8 +13,9 @@ type Storage struct {
 	files map[string]string
 	mu    *sync.RWMutex
 
-	token   *Token
-	watcher *Watcher
+	token    *Token
+	watcher  *Watcher
+	onUpdate chan string
 }
 
 func NewStorage() *Storage {
@@ -24,10 +25,11 @@ func NewStorage() *Storage {
 	}
 
 	s := &Storage{
-		files:   make(map[string]string),
-		token:   &Token{},
-		mu:      &sync.RWMutex{},
-		watcher: w,
+		files:    make(map[string]string),
+		token:    &Token{},
+		mu:       &sync.RWMutex{},
+		watcher:  w,
+		onUpdate: make(chan string),
 	}
 
 	go func() {
@@ -35,6 +37,7 @@ func NewStorage() *Storage {
 		for {
 			fname := <-ch
 			s.UpdateFile(fname)
+			s.onUpdate <- fname
 		}
 	}()
 
@@ -135,4 +138,8 @@ func (_ *Storage) insertCSS(html string) string {
 	tagEnd := `
 </div>`
 	return tags + html + tagEnd
+}
+
+func (s *Storage) OnUpdate() <-chan string {
+	return s.onUpdate
 }
