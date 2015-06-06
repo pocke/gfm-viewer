@@ -136,6 +136,7 @@ func (_ *Storage) insertCSS(html string) string {
 </style>
 `
 	tagEnd := `
+<script src="/js/main.js"></script>
 </div>`
 	return tags + html + tagEnd
 }

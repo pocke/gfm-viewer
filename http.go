@@ -20,12 +20,16 @@ func NewServer() *Server {
 	}
 
 	go func() {
+		wsm := NewWSManager(s.storage.OnUpdate())
+
 		mux := denco.NewMux()
 		f, err := mux.Build([]denco.Handler{
 			mux.GET("/", s.indexHandler),
 			mux.POST("/auth", s.authHandler),
 			mux.GET("/files/*path", s.ServeFile),
 			mux.GET("/css/github-markdown.css", s.serveCSS),
+			mux.GET("/js/main.js", s.serveJS),
+			mux.GET("/ws/*path", wsm.ServeWS),
 		})
 		if err != nil {
 			panic(err)
@@ -98,5 +102,15 @@ func (s *Server) serveCSS(w http.ResponseWriter, r *http.Request, _ denco.Params
 		return
 	}
 	w.Header().Set("Content-Type", "text/css")
+	w.Write(file)
+}
+
+func (s *Server) serveJS(w http.ResponseWriter, r *http.Request, _ denco.Params) {
+	file, err := Asset("assets/main.js")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/javascript")
 	w.Write(file)
 }
