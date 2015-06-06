@@ -7,7 +7,7 @@ import (
 
 	"github.com/naoina/denco"
 	"github.com/pocke/gfm-viewer/env"
-	"github.com/pocke/hlog.go"
+	"github.com/pocke/hlog"
 	"github.com/yosssi/ace"
 )
 

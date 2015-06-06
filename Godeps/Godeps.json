@@ -1,0 +1,36 @@
+{
+	"ImportPath": "github.com/pocke/gfm-viewer",
+	"GoVersion": "go1.4.2",
+	"Deps": [
+		{
+			"ImportPath": "github.com/go-fsnotify/fsnotify",
+			"Comment": "v1.2.0-1-g6549b98",
+			"Rev": "6549b98005f3e4026ad9f50ef7d5011f40ba1397"
+		},
+		{
+			"ImportPath": "github.com/google/go-github/github",
+			"Rev": "2431923100d4989611dcc339f1ff8d280bd9c84c"
+		},
+		{
+			"ImportPath": "github.com/google/go-querystring/query",
+			"Rev": "d8840cbb2baa915f4836edda4750050a2c0b7aea"
+		},
+		{
+			"ImportPath": "github.com/naoina/denco",
+			"Rev": "9af2ba0e24214bac003821f4a501b131b2e04c75"
+		},
+		{
+			"ImportPath": "github.com/pocke/hlog",
+			"Rev": "4aa9425a336f581ca07b0925f0a8f1dd6b9c552b"
+		},
+		{
+			"ImportPath": "github.com/yosssi/ace",
+			"Comment": "v0.0.4-35-g5b6d08c",
+			"Rev": "5b6d08c57282ff44a1af16d2aad71732b5b21932"
+		},
+		{
+			"ImportPath": "golang.org/x/net/websocket",
+			"Rev": "dfe268fd2bb5c793f4c083803609fce9806c6f80"
+		}
+	]
+}
