@@ -13,15 +13,34 @@ type Storage struct {
 	files map[string]string
 	mu    *sync.RWMutex
 
-	token *Token
+	token    *Token
+	watcher  *Watcher
+	onUpdate chan string
 }
 
 func NewStorage() *Storage {
-	s := &Storage{
-		files: make(map[string]string),
-		token: &Token{},
-		mu:    &sync.RWMutex{},
+	w, err := NewWatcher()
+	if err != nil {
+		panic(err)
 	}
+
+	s := &Storage{
+		files:    make(map[string]string),
+		token:    &Token{},
+		mu:       &sync.RWMutex{},
+		watcher:  w,
+		onUpdate: make(chan string),
+	}
+
+	go func() {
+		ch := w.OnUpdate()
+		for {
+			fname := <-ch
+			s.UpdateFile(fname)
+			s.onUpdate <- fname
+		}
+	}()
+
 	return s
 }
 
@@ -37,22 +56,39 @@ func (s *Storage) AddFiles(paths []string) {
 	}
 
 	for _, path := range paths {
-		md, err := ioutil.ReadFile(path)
+		err := s.watcher.AddFile(path)
 		if err != nil {
 			s.files[path] = err.Error()
 			continue
 		}
-
-		html, err := s.md2html(string(md))
-		if err != nil {
-			s.files[path] = html
-			continue
-		}
-		html = s.insertCSS(html)
-		s.files[path] = html
+		s.AddFile(path)
 	}
 }
-func (s *Storage) UpdateAll() {
+
+// without mutex
+func (s *Storage) AddFile(path string) error {
+	md, err := ioutil.ReadFile(path)
+	if err != nil {
+		s.files[path] = err.Error()
+		return err
+	}
+
+	html, err := s.md2html(string(md))
+	if err != nil {
+		s.files[path] = html
+		return err
+	}
+	html = s.insertCSS(html)
+	s.files[path] = html
+	return nil
+}
+
+func (s *Storage) UpdateFile(path string) error {
+	// TODO: thrrow event to http
+	return s.AddFile(path)
+}
+
+func (s *Storage) AddAll() {
 	s.AddFiles(s.Index())
 }
 
@@ -100,6 +136,11 @@ func (_ *Storage) insertCSS(html string) string {
 </style>
 `
 	tagEnd := `
+<script src="/js/main.js"></script>
 </div>`
 	return tags + html + tagEnd
+}
+
+func (s *Storage) OnUpdate() <-chan string {
+	return s.onUpdate
 }
