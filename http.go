@@ -72,7 +72,7 @@ func (s *Server) authHandler(w http.ResponseWriter, r *http.Request, _ denco.Par
 }
 
 func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request, _ denco.Params) {
-	if s.storage.token.hasToken() {
+	if false && s.storage.token.hasToken() {
 		loadAce(w, "index", s.storage.Index())
 	} else {
 		loadAce(w, "before_auth", nil)
@@ -80,7 +80,7 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request, _ denco.Pa
 }
 
 func loadAce(w http.ResponseWriter, action string, data interface{}) {
-	tpl, err := ace.Load("assets/"+action, "", &ace.Options{
+	tpl, err := ace.Load("assets/base", "assets/"+action, &ace.Options{
 		DynamicReload: env.DEBUG,
 		Asset:         Asset,
 	})

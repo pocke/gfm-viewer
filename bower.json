@@ -11,6 +11,7 @@
     "tests"
   ],
   "dependencies": {
-    "github-markdown-css": "~2.0.8"
+    "github-markdown-css": "~2.0.8",
+    "bootstrap": "~3.3.4"
   }
 }

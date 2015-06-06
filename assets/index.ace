@@ -1,15 +1,8 @@
-= doctype html
-html lang=en
-  head
-    title gfm-viewer
+= content main
+  h2 Pages
 
-  body
-    h1 gfm-viewer
-
-    h2 Pages
-
-    ul
-      {{range $index, $path := .}}
-        li 
-          a href="files/{{$path}}" {{$path}} 
-      {{end}}
+  ul
+    {{range $index, $path := .}}
+      li
+        a href="files/{{$path}}" {{$path}}
+    {{end}}

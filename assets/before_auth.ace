@@ -1,18 +1,17 @@
-= doctype html
-html lang=en
-  head
-    title gfm-viewer
+= content main
+  h2 Auth
 
-  body
-    h1 gfm-viewer
+  form.form-horizontal action="/auth" method="post"
+    .form-group
+      label.col-sm-2.col-xs-2.control-label for="username" User Name
+      .col-sm-5.col-xs-8
+        input.form-control type="text" id="username" name="username"
 
-    h2 Auth
+    .form-group
+      label.col-sm-2.col-xs-2.control-label for="password" Password
+      .col-sm-5.col-xs-8
+        input.form-control type="password" id="password" name="password"
 
-    form action="/auth" method="post"
-      label for="username" User Name
-      input type="text" id="username" name="username"
-
-      label for="password" Password
-      input type="password" id="password" name="password"
-
-      input type="submit" value="Submit"
+    .form-group
+      .col-sm-offset-2.col-xs-offset-2.col-sm-5.col-xs-8
+        input.btn.btn-primary type="submit" value="Submit"
