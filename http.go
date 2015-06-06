@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"path"
 
 	"github.com/naoina/denco"
 	"github.com/pocke/gfm-viewer/env"
@@ -27,9 +28,8 @@ func NewServer() *Server {
 			mux.GET("/", s.indexHandler),
 			mux.POST("/auth", s.authHandler),
 			mux.GET("/files/*path", s.ServeFile),
-			mux.GET("/css/github-markdown.css", s.serveCSS),
-			mux.GET("/js/main.js", s.serveJS),
 			mux.GET("/ws/*path", wsm.ServeWS),
+			mux.GET("/:type/:fname", s.serveAsset),
 		})
 		if err != nil {
 			panic(err)
@@ -95,22 +95,22 @@ func loadAce(w http.ResponseWriter, action string, data interface{}) {
 	}
 }
 
-func (s *Server) serveCSS(w http.ResponseWriter, r *http.Request, _ denco.Params) {
-	file, err := Asset("assets/github-markdown.css")
+func (s *Server) serveAsset(w http.ResponseWriter, r *http.Request, p denco.Params) {
+	t := p.Get("type")
+	fname := p.Get("fname")
+	file, err := Asset(path.Join("assets", t, fname))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "text/css")
-	w.Write(file)
-}
 
-func (s *Server) serveJS(w http.ResponseWriter, r *http.Request, _ denco.Params) {
-	file, err := Asset("assets/main.js")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	var contentType string
+	switch t {
+	case "js":
+		contentType = "application/javascript"
+	case "css":
+		contentType = "text/css"
 	}
-	w.Header().Set("Content-Type", "application/javascript")
+	w.Header().Set("Content-Type", contentType)
 	w.Write(file)
 }
