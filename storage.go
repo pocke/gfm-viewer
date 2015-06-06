@@ -74,6 +74,7 @@ func (s *Storage) AddFile(path string) error {
 	}
 
 	html, err := s.md2html(string(md))
+	Log("Markdown parse request done for %s", path)
 	if err != nil {
 		s.files[path] = html
 		return err
