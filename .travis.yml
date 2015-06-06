@@ -19,6 +19,7 @@ before_install:
 
   # For build
   - npm install -g bower
+  - make depends
   - make
 
 script:
