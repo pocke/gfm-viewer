@@ -47,7 +47,6 @@ func (w *WSManager) watch() {
 	for {
 		path := <-w.receiveUpdate
 		Log("Update %s", path)
-		Log("sessions n: %d", len(w.sessions[path]))
 		s, ok := w.sessions[path]
 		if !ok {
 			continue
