@@ -18,6 +18,8 @@ func TestWSManagerAdd(t *testing.T) {
 
 	wsm.add(path)
 
+	wsm.mu.RLock()
+	defer wsm.mu.RUnlock()
 	if l := len(wsm.sessions[path]); l != 1 {
 		t.Errorf("Expected: 1, but got %d", l)
 	}
@@ -35,6 +37,8 @@ func TestWSManagerWatch(t *testing.T) {
 	<-watchCh
 
 	updateCh <- path // as sleep
+	wsm.mu.RLock()
+	defer wsm.mu.RUnlock()
 	if l := len(wsm.sessions[path]); l != 0 {
 		t.Errorf("Expected: 0, but got %d", l)
 	}
