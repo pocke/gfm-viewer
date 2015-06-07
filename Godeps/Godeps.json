@@ -24,6 +24,10 @@
 			"Rev": "4aa9425a336f581ca07b0925f0a8f1dd6b9c552b"
 		},
 		{
+			"ImportPath": "github.com/skratchdot/open-golang/open",
+			"Rev": "c8748311a7528d0ba7330d302adbc5a677ef9c9e"
+		},
+		{
 			"ImportPath": "github.com/yosssi/ace",
 			"Comment": "v0.0.4-35-g5b6d08c",
 			"Rev": "5b6d08c57282ff44a1af16d2aad71732b5b21932"
