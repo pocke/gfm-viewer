@@ -13,5 +13,17 @@
     };
   };
 
-  wsConn();
+  $(document).on('click', '.page', function (e) {
+    e.preventDefault();
+    var a = $(this);
+    var url = a.attr('href');
+    console.log(url);
+
+    $.ajax({url: url}).done(function (data) {
+      $('#md-body').html(data);
+      $('#md-title').text(url.replace(/^.+\/([^\/]+)$/, "$1"));
+      $("#md").removeClass("hidden");
+    });
+  });
+
 })();

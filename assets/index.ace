@@ -4,5 +4,13 @@
   ul
     {{range $index, $path := .}}
       li
-        a href="files/{{$path}}" {{$path}}
+        a.page href="files/{{$path}}" {{$path}}
     {{end}}
+
+  .panel.panel-default.hidden#md
+    .panel-heading
+      h3.panel-title#md-title
+    .panel-body#md-body
+
+  script src="/js/jquery.min.js"
+  script src="/js/main.js"
