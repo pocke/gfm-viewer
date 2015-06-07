@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"sort"
@@ -9,8 +10,13 @@ import (
 	"github.com/google/go-github/github"
 )
 
+type file struct {
+	html string
+	err  error
+}
+
 type Storage struct {
-	files map[string]string
+	files map[string]file
 	mu    *sync.RWMutex
 
 	token    *Token
@@ -25,7 +31,7 @@ func NewStorage() *Storage {
 	}
 
 	s := &Storage{
-		files:    make(map[string]string),
+		files:    make(map[string]file),
 		token:    &Token{},
 		mu:       &sync.RWMutex{},
 		watcher:  w,
@@ -50,7 +56,9 @@ func (s *Storage) AddFiles(paths []string) {
 
 	if !s.token.hasToken() {
 		for _, path := range paths {
-			s.files[path] = ""
+			s.files[path] = file{
+				err: errors.New("GitHub API token doesn't exist."),
+			}
 		}
 		return
 	}
@@ -58,7 +66,7 @@ func (s *Storage) AddFiles(paths []string) {
 	for _, path := range paths {
 		err := s.watcher.AddFile(path)
 		if err != nil {
-			s.files[path] = err.Error()
+			s.files[path] = file{err: err}
 			continue
 		}
 		s.AddFile(path)
@@ -66,43 +74,43 @@ func (s *Storage) AddFiles(paths []string) {
 }
 
 // without mutex
-func (s *Storage) AddFile(path string) error {
+func (s *Storage) AddFile(path string) {
 	md, err := ioutil.ReadFile(path)
 	if err != nil {
-		s.files[path] = err.Error()
-		return err
+		s.files[path] = file{err: err}
+		return
 	}
 
 	html, err := s.md2html(string(md))
 	Log("Markdown parse request done for %s", path)
 	if err != nil {
-		s.files[path] = html
-		return err
+		s.files[path] = file{err: err}
+		return
 	}
 	html = s.insertCSS(html)
-	s.files[path] = html
-	return nil
+	s.files[path] = file{html: html}
+	return
 }
 
-func (s *Storage) UpdateFile(path string) error {
+func (s *Storage) UpdateFile(path string) {
 	// TODO: thrrow event to http
-	return s.AddFile(path)
+	s.AddFile(path)
 }
 
 func (s *Storage) AddAll() {
 	s.AddFiles(s.Index())
 }
 
-func (s *Storage) Get(path string) (string, bool) {
+func (s *Storage) Get(path string) (file, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	html, ok := s.files[path]
-	if ok {
-		return html, ok
+	f, exist := s.files[path]
+	if exist {
+		return f, exist
 	} else {
-		html, ok := s.files["/"+path]
-		return html, ok
+		f, exist := s.files["/"+path]
+		return f, exist
 	}
 }
 

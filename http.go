@@ -52,12 +52,17 @@ func NewServer(port int) *Server {
 
 func (s *Server) ServeFile(w http.ResponseWriter, r *http.Request, p denco.Params) {
 	path := p.Get("path")
-	html, ok := s.storage.Get(path)
-	if !ok {
+	f, exist := s.storage.Get(path)
+	if !exist {
 		http.Error(w, fmt.Sprintf("%s page not found", path), http.StatusNotFound)
 		return
 	}
-	w.Write([]byte(html))
+	if f.err != nil {
+		http.Error(w, f.err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Write([]byte(f.html))
 }
 
 func (s *Server) authHandler(w http.ResponseWriter, r *http.Request, _ denco.Params) {
