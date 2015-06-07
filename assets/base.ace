@@ -13,6 +13,11 @@ html lang=en
         margin: 0 auto;
         padding: 30px;
       }
+      .modal-header {
+        border-top-left-radius: 6px;
+        border-top-right-radius: 6px;
+      }
+
 
   body
     .container

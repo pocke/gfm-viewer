@@ -23,6 +23,9 @@
       $('#md-body').html(data);
       $('#md-title').text(url.replace(/^.+\/([^\/]+)$/, "$1"));
       $("#md").removeClass("hidden");
+    }).fail(function (xhr) {
+      $('#modal-body').text(xhr.responseText);
+      $('#modal').modal('show');
     });
   });
 

@@ -12,5 +12,18 @@
       h3.panel-title#md-title
     .panel-body#md-body
 
+  .modal.fade#modal
+    .modal-dialog
+      .modal-content
+        .modal-header.bg-danger
+          button.close type=button data-dismiss=modal aria-label=Close
+            span aria-hidden=true &times;
+          h4.modal-title Error
+        .modal-body
+          p#modal-body
+        .modal-footer
+          button.btn.btn-default type=button data-dismiss=modal Close
+
   script src="/js/jquery.min.js"
+  script src="/js/bootstrap.min.js"
   script src="/js/main.js"
