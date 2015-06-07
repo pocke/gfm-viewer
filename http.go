@@ -95,7 +95,7 @@ func loadAce(w http.ResponseWriter, action string, data interface{}) {
 	}
 }
 
-func (s *Server) serveAsset(w http.ResponseWriter, r *http.Request, p denco.Params) {
+func (_ *Server) serveAsset(w http.ResponseWriter, r *http.Request, p denco.Params) {
 	t := p.Get("type")
 	fname := p.Get("fname")
 	file, err := Asset(path.Join("assets", t, fname))
