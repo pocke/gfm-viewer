@@ -8,6 +8,21 @@ import (
 	"github.com/naoina/denco"
 )
 
+func TestLoadAce(t *testing.T) {
+	w := httptest.NewRecorder()
+	loadAce(w, "before_auth", nil)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("status should be %d, but got %d", http.StatusOK, w.Code)
+	}
+
+	w = httptest.NewRecorder()
+	loadAce(w, "not_exist_template", nil)
+	if w.Code != http.StatusInternalServerError {
+		t.Errorf("status should be %d, but got %d", http.StatusInternalServerError, w.Code)
+	}
+}
+
 func TestServeAsset(t *testing.T) {
 	s := &Server{}
 

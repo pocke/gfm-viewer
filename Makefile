@@ -11,3 +11,6 @@ depends:
 	go get github.com/jteeuwen/go-bindata/...
 	godep restore
 	bower install
+
+test:
+	godep go test -v -tags=release
