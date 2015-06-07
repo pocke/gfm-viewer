@@ -6,18 +6,7 @@ html lang=en
     meta name=viewport content="width=device-width" initial-scale=1
     link rel="stylesheet" href="/css/bootstrap.min.css"
     link rel="stylesheet" href="/css/github-markdown.css"
-    = css
-      .markdown-body {
-        min-width: 200px;
-        max-width: 790px;
-        margin: 0 auto;
-        padding: 30px;
-      }
-      .modal-header {
-        border-top-left-radius: 6px;
-        border-top-right-radius: 6px;
-      }
-
+    link rel="stylesheet" href="/css/main.css"
 
   body
     .container
