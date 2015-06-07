@@ -8,6 +8,7 @@ import (
 	"github.com/naoina/denco"
 	"github.com/pocke/gfm-viewer/env"
 	"github.com/pocke/hlog"
+	"github.com/skratchdot/open-golang/open"
 	"github.com/yosssi/ace"
 )
 
@@ -40,6 +41,9 @@ func NewServer(port int) *Server {
 		}
 		http.HandleFunc("/", handler)
 		// TODO: port
+		url := fmt.Sprintf("http://localhost:%d", port)
+		fmt.Printf("Open: %s\n", url)
+		open.Start(url)
 		http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 	}()
 
