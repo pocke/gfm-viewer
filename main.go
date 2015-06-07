@@ -1,16 +1,20 @@
 package main
 
 import (
+	"flag"
 	"log"
-	"os"
 
 	"github.com/pocke/gfm-viewer/env"
 )
 
 func main() {
-	files := os.Args[1:]
+	var port int
+	flag.IntVar(&port, "port", 1124, "TCP port number")
+	flag.Parse()
 
-	s := NewServer()
+	files := flag.Args()
+
+	s := NewServer(port)
 
 	s.storage.AddFiles(files)
 

@@ -15,7 +15,7 @@ type Server struct {
 	storage *Storage
 }
 
-func NewServer() *Server {
+func NewServer(port int) *Server {
 	s := &Server{
 		storage: NewStorage(),
 	}
@@ -40,7 +40,7 @@ func NewServer() *Server {
 		}
 		http.HandleFunc("/", handler)
 		// TODO: port
-		http.ListenAndServe(":1124", nil)
+		http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 	}()
 
 	return s
