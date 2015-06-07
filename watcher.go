@@ -34,7 +34,9 @@ func NewWatcher() (*Watcher, error) {
 				}
 				res.buf <- ev.Name
 			case err := <-w.Errors:
-				panic(err)
+				if err != nil {
+					panic(err)
+				}
 			}
 		}
 	}()
@@ -48,8 +50,10 @@ func (w *Watcher) AddFile(path string) error {
 	return w.w.Add(path)
 }
 
+// OnUpdate returns channel that notify on file update.
 func (w *Watcher) OnUpdate() <-chan string { return w.onUpdate }
-func (w *Watcher) Close() error            { return w.w.Close() }
+
+func (w *Watcher) Close() error { return w.w.Close() }
 
 // Vim notifies three times.
 // Ref: Japanese blog: http://qiita.com/ma2saka/items/d30e48b4c72f1f5f4873
