@@ -12,5 +12,8 @@ depends:
 	godep restore
 	bower install
 
+install:
+	godep go install
+
 test:
 	godep go test -v -tags=release
