@@ -87,7 +87,6 @@ func (s *Storage) AddFile(path string) {
 		s.files[path] = file{err: err}
 		return
 	}
-	html = s.insertCSS(html)
 	s.files[path] = file{html: html}
 	return
 }
@@ -134,20 +133,6 @@ func (s *Storage) md2html(md string) (string, error) {
 	})
 	html, _, err := client.Markdown(md, nil)
 	return html, err
-}
-
-func (_ *Storage) insertCSS(html string) string {
-	tags := `<!DOCTYPE html>
-<link rel="stylesheet" href="/css/github-markdown.css">
-<div class="markdown-body">
-<style>
-.markdown-body { min-width: 200px; max-width: 790px; margin: 0 auto; padding: 30px; }
-</style>
-`
-	tagEnd := `
-<script src="/js/main.js"></script>
-</div>`
-	return tags + html + tagEnd
 }
 
 func (s *Storage) OnUpdate() <-chan string {
