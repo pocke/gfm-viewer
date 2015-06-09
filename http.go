@@ -29,7 +29,7 @@ func NewServer(port int) *Server {
 			mux.GET("/", s.indexHandler),
 			mux.POST("/auth", s.authHandler),
 			mux.GET("/files/*path", s.ServeFile),
-			mux.GET("/ws/*path", wsm.ServeWS),
+			mux.GET("/ws", wsm.ServeWS),
 			mux.GET("/:type/:fname", s.serveAsset),
 		})
 		if err != nil {
