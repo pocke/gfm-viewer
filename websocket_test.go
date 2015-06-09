@@ -1,3 +1,3 @@
 package main
 
-var _ WSManager &wsManager{}
+var _ WSManager = &wsManager{}
