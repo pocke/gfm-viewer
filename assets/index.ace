@@ -4,7 +4,7 @@
   ul
     {{range $index, $path := .}}
       li
-        a.page href="files/{{$path}}" {{$path}}
+        a.page data-filepath="{{$path}}" href="files/{{$path}}" {{$path}}
     {{end}}
 
   .panel.panel-default.hidden#md
