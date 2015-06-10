@@ -4,7 +4,7 @@ gfm-viewer
 [![Build Status](https://travis-ci.org/pocke/gfm-viewer.svg?branch=master)](https://travis-ci.org/pocke/gfm-viewer)
 [![Coverage Status](https://coveralls.io/repos/pocke/gfm-viewer/badge.svg?branch=travis)](https://coveralls.io/r/pocke/gfm-viewer?branch=travis)
 
-gfm-viewer is GitHub Flavored markdown viewer.
+gfm-viewer is GitHub Flavored markdown Viewer.
 
 
 Installation
@@ -52,6 +52,12 @@ Supports
 
 Maybe, it works on other OS.
 But I do not have OS other than Linux. So, I can't check of operation on other OS.
+
+
+Links
+---------
+
+- [Markdown ビューワをリリースした - pockestrap (Japanese Blog)](http://pocke.hatenablog.com/entry/2015/06/10/135943)
 
 License
 -------------
