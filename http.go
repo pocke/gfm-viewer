@@ -11,6 +11,7 @@ import (
 	"github.com/yosssi/ace"
 )
 
+// Server is HTTP server.
 type Server struct {
 	storage *Storage
 }
@@ -49,6 +50,7 @@ func NewServer(port int) *Server {
 	return s
 }
 
+// ServeFile serves parsed markdown.
 func (s *Server) ServeFile(w http.ResponseWriter, r *http.Request, p denco.Params) {
 	path := p.Get("path")
 	f, exist := s.storage.Get(path)
@@ -64,6 +66,7 @@ func (s *Server) ServeFile(w http.ResponseWriter, r *http.Request, p denco.Param
 	w.Write([]byte(f.html))
 }
 
+// authHandler get and save GitHub access token.
 func (s *Server) authHandler(w http.ResponseWriter, r *http.Request, _ denco.Params) {
 	r.ParseForm()
 	v := r.PostForm

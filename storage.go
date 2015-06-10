@@ -15,15 +15,19 @@ type file struct {
 	err  error
 }
 
+// Storage parses markdown. And save this. HTTP Server read parsed markdown from Storage.
 type Storage struct {
 	files map[string]file
 	mu    *sync.RWMutex
 
-	token    *Token
-	watcher  *Watcher
+	token   *Token
+	watcher *Watcher
+	// onUpdate notify when file is updated.
 	onUpdate chan string
 }
 
+// NewStorage creates a new Storage.
+// And watch changing file. When notify changing file, parse markdown and notify by 'onUpdate' channel.
 func NewStorage() *Storage {
 	w, err := NewWatcher()
 	if err != nil {
@@ -43,13 +47,13 @@ func NewStorage() *Storage {
 		for {
 			fname := <-ch
 			s.UpdateFile(fname)
-			s.onUpdate <- fname
 		}
 	}()
 
 	return s
 }
 
+// AddFiles parses and saves parsed markdowns.
 func (s *Storage) AddFiles(paths []string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -91,9 +95,10 @@ func (s *Storage) AddFile(path string) {
 	return
 }
 
+// UpdateFile update saved file, and notify update.
 func (s *Storage) UpdateFile(path string) {
-	// TODO: thrrow event to http
 	s.AddFile(path)
+	s.onUpdate <- path
 }
 
 func (s *Storage) AddAll() {
@@ -113,6 +118,7 @@ func (s *Storage) Get(path string) (file, bool) {
 	}
 }
 
+// Index returns path list of saved files.
 func (s *Storage) Index() []string {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -127,6 +133,7 @@ func (s *Storage) Index() []string {
 	return res
 }
 
+// md2html parses markdown.
 func (s *Storage) md2html(md string) (string, error) {
 	client := github.NewClient(&http.Client{
 		Transport: s.token,

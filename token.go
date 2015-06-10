@@ -10,10 +10,12 @@ import (
 	"strings"
 )
 
+// Token is Github access token.
 type Token struct {
 	Token string `json:"token"`
 }
 
+// Init gets access token from GitHub.
 func (t *Token) Init(user, pass string) error {
 	req, err := http.NewRequest(
 		"POST",
@@ -38,10 +40,12 @@ func (t *Token) Init(user, pass string) error {
 	return t.SaveFile()
 }
 
+// SaveFile saves token to file.
 func (t *Token) SaveFile() error {
 	return ioutil.WriteFile(t.filePath(), []byte(t.Token), 0644)
 }
 
+// LoadFile loads token from file.
 func (t *Token) LoadFile() error {
 	f, err := ioutil.ReadFile(t.filePath())
 	if err != nil {
@@ -51,6 +55,7 @@ func (t *Token) LoadFile() error {
 	return nil
 }
 
+// hasToken returns whether the token is saved.
 func (t *Token) hasToken() bool {
 	err := t.LoadFile()
 	if err != nil {
@@ -59,6 +64,7 @@ func (t *Token) hasToken() bool {
 	return t.Token != ""
 }
 
+// filePath is path of saving token.
 func (_ *Token) filePath() string {
 	fname := "gfm-viewer"
 	if xdg := os.Getenv("XDG_CACHE_HOME"); xdg != "" {
@@ -68,6 +74,7 @@ func (_ *Token) filePath() string {
 	}
 }
 
+// For Storage#md2html
 func (t *Token) RoundTrip(req *http.Request) (*http.Response, error) {
 	req.Header.Set("Authorization", "token "+t.Token)
 
