@@ -39,7 +39,10 @@ If you save file, automatically parse and reload.
 
 ### Screen Shot
 
+
 ![ScreenShot](screen_shot.png)
+
+![ScreenShot](screen_shot.gif)
 
 
 Supports
