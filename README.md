@@ -18,8 +18,6 @@ make depends && make install
 
 *TODO*  binary download.
 
-![ScreenShot](screen_shot.png)
-
 Usage
 ----------
 
@@ -31,6 +29,11 @@ Automatically opens the browser.
 Parsed markdown is opened by click filename.
 
 If you save file, automatically parse and reload.
+
+
+### Screen Shot
+
+![ScreenShot](screen_shot.png)
 
 
 Supports
