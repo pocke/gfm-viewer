@@ -28,7 +28,7 @@ func NewServer(port int) *Server {
 			mux.GET("/", s.indexHandler),
 			mux.POST("/auth", s.authHandler),
 			mux.GET("/files/*path", s.ServeFile),
-			mux.GET("/ws", wsm.ServeWS),
+			mux.GET("/ws", func(w http.ResponseWriter, r *http.Request, _ denco.Params) { wsm.ServeHTTP(w, r) }),
 			mux.GET("/:type/:fname", s.serveAsset),
 		})
 		if err != nil {

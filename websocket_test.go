@@ -1,14 +1,11 @@
 package main
 
 import (
-	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
 	"golang.org/x/net/websocket"
-
-	"github.com/naoina/denco"
 )
 
 var _ WSManager = &wsManager{}
@@ -17,9 +14,7 @@ func TestWSManager(t *testing.T) {
 	ch := make(chan string)
 	wsm := NewWSManager(ch)
 
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		wsm.ServeWS(w, r, denco.Params{})
-	}))
+	ts := httptest.NewServer(wsm)
 	defer ts.Close()
 
 	ws, err := websocket.Dial(strings.Replace(ts.URL, "http://", "ws://", 1), "", ts.URL)

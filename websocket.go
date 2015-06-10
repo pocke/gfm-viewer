@@ -5,14 +5,12 @@ import (
 	"sync"
 
 	"golang.org/x/net/websocket"
-
-	"github.com/naoina/denco"
 )
 
 type signal struct{}
 
 type WSManager interface {
-	ServeWS(w http.ResponseWriter, r *http.Request, _ denco.Params)
+	ServeHTTP(w http.ResponseWriter, r *http.Request)
 }
 
 func NewWSManager(ch <-chan string) WSManager {
@@ -34,7 +32,7 @@ type wsManager struct {
 	mu       *sync.RWMutex
 }
 
-func (wsm *wsManager) ServeWS(w http.ResponseWriter, r *http.Request, _ denco.Params) {
+func (wsm *wsManager) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	websocket.Handler(func(ws *websocket.Conn) {
 		id := uniqID()
 		ch := make(chan string)
