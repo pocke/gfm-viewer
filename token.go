@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 )
 
@@ -42,7 +43,12 @@ func (t *Token) Init(user, pass string) error {
 
 // SaveFile saves token to file.
 func (t *Token) SaveFile() error {
-	return ioutil.WriteFile(t.filePath(), []byte(t.Token), 0644)
+	path := t.filePath()
+	dir := filepath.Dir(path)
+	if _, err := os.Stat(dir); err != nil {
+		os.MkdirAll(path, 0777)
+	}
+	return ioutil.WriteFile(path, []byte(t.Token), 0644)
 }
 
 // LoadFile loads token from file.
