@@ -13,7 +13,7 @@ depends:
 	bower install
 
 install:
-	godep go install
+	godep go install -tags=release
 
 test:
 	godep go test -v -tags=release

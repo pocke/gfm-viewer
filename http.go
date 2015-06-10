@@ -6,7 +6,6 @@ import (
 	"path"
 
 	"github.com/naoina/denco"
-	"github.com/pocke/gfm-viewer/env"
 	"github.com/pocke/hlog"
 	"github.com/skratchdot/open-golang/open"
 	"github.com/yosssi/ace"
@@ -36,7 +35,7 @@ func NewServer(port int) *Server {
 			panic(err)
 		}
 		handler := f.ServeHTTP
-		if env.DEBUG {
+		if DEBUG {
 			handler = hlog.Wrap(f.ServeHTTP)
 		}
 		http.HandleFunc("/", handler)
@@ -90,7 +89,7 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request, _ denco.Pa
 
 func loadAce(w http.ResponseWriter, action string, data interface{}) {
 	tpl, err := ace.Load("assets/base", "assets/"+action, &ace.Options{
-		DynamicReload: env.DEBUG,
+		DynamicReload: DEBUG,
 		Asset:         Asset,
 	})
 	if err != nil {

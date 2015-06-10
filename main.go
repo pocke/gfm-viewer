@@ -3,8 +3,6 @@ package main
 import (
 	"flag"
 	"log"
-
-	"github.com/pocke/gfm-viewer/env"
 )
 
 func main() {
@@ -22,7 +20,7 @@ func main() {
 }
 
 func Log(format string, args ...interface{}) {
-	if env.DEBUG {
+	if DEBUG {
 		log.Printf(format, args...)
 	}
 }
