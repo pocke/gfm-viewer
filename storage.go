@@ -35,20 +35,15 @@ func NewStorage() *Storage {
 	}
 
 	s := &Storage{
-		files:    make(map[string]file),
+		files: make(map[string]file),
+		mu:    &sync.RWMutex{},
+
 		token:    &Token{},
-		mu:       &sync.RWMutex{},
 		watcher:  w,
 		onUpdate: make(chan string),
 	}
 
-	go func() {
-		ch := w.OnUpdate()
-		for {
-			fname := <-ch
-			s.UpdateFile(fname)
-		}
-	}()
+	go s.watch()
 
 	return s
 }
@@ -97,6 +92,9 @@ func (s *Storage) AddFile(path string) {
 
 // UpdateFile update saved file, and notify update.
 func (s *Storage) UpdateFile(path string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	s.AddFile(path)
 	s.onUpdate <- path
 }
@@ -144,4 +142,12 @@ func (s *Storage) md2html(md string) (string, error) {
 
 func (s *Storage) OnUpdate() <-chan string {
 	return s.onUpdate
+}
+
+func (s *Storage) watch() {
+	ch := s.watcher.OnUpdate()
+	for {
+		fname := <-ch
+		s.UpdateFile(fname)
+	}
 }
