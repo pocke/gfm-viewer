@@ -31,22 +31,7 @@ func NewWatcher() (Watcher, error) {
 		buf:      make(chan string, 3),
 	}
 
-	go func() {
-		for {
-			select {
-			case ev := <-w.Events:
-				if ev.Op == fsnotify.Remove {
-					w.Add(ev.Name)
-				}
-				res.buf <- ev.Name
-			case err := <-w.Errors:
-				if err != nil {
-					panic(err)
-				}
-			}
-		}
-	}()
-
+	go res.watchFS()
 	go res.watchBuffer()
 
 	return res, nil
@@ -87,5 +72,21 @@ func (w *watcher) watchBuffer() {
 			flags[n] = false
 			w.onUpdate <- n
 		}(name)
+	}
+}
+
+func (w *watcher) watchFS() {
+	for {
+		select {
+		case ev := <-w.w.Events:
+			if ev.Op == fsnotify.Remove {
+				w.w.Add(ev.Name)
+			}
+			w.buf <- ev.Name
+		case err := <-w.w.Errors:
+			if err != nil {
+				panic(err)
+			}
+		}
 	}
 }
