@@ -6,6 +6,8 @@ import (
 	"testing"
 )
 
+var _ Watcher = &watcher{}
+
 func TestWatcher(t *testing.T) {
 	w, err := NewWatcher()
 	if err != nil {

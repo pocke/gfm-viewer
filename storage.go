@@ -21,7 +21,7 @@ type Storage struct {
 	mu    *sync.RWMutex
 
 	token   *Token
-	watcher *Watcher
+	watcher Watcher
 	// onUpdate notify when file is updated.
 	onUpdate chan string
 }

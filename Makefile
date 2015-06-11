@@ -16,4 +16,4 @@ install:
 	godep go install -tags=release
 
 test:
-	godep go test -v -tags=release
+	godep go test -v -race -tags=release
