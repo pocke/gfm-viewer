@@ -10,13 +10,12 @@ gfm-viewer is GitHub Flavored markdown Viewer.
 Installation
 -----------------
 
-If you download binary(64bit Linux only).
+### If you download binary(64bit Linux only).
 
-```sh
-wget https://github.com/pocke/gfm-viewer/releases/download/v0.1.0/gfm-viewer
-```
+You download binary from [latest release](https://github.com/pocke/gfm-viewer/releases/latest), and place it in `$PATH` directory.
 
-Or if build yourself.
+
+### Or if build yourself.
 
 ```sh
 go get -d github.com/pocke/gfm-viewer
