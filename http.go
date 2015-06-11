@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"path"
+	"time"
 
 	"github.com/naoina/denco"
 	"github.com/pocke/hlog"
@@ -40,11 +41,16 @@ func NewServer(port int) *Server {
 			handler = hlog.Wrap(f.ServeHTTP)
 		}
 		http.HandleFunc("/", handler)
-		// TODO: port
 		url := fmt.Sprintf("http://localhost:%d", port)
+		go func() {
+			err = http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+			if err != nil {
+				panic(err)
+			}
+		}()
+		<-time.After(10 * time.Millisecond)
 		fmt.Printf("Open: %s\n", url)
 		open.Start(url)
-		http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 	}()
 
 	return s
