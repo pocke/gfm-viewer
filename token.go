@@ -18,10 +18,14 @@ type Token struct {
 
 // Init gets access token from GitHub.
 func (t *Token) Init(user, pass string) error {
+	hostname, err := os.Hostname()
+	if err != nil {
+		return err
+	}
 	req, err := http.NewRequest(
 		"POST",
 		"https://api.github.com/authorizations",
-		strings.NewReader(`{"note":"gfm-viewer"}`),
+		strings.NewReader(fmt.Sprintf(`{"note":"gfm-viewer@%s"}`, hostname)),
 	)
 	if err != nil {
 		return err
