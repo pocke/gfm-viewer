@@ -13,6 +13,7 @@ depends:
 	bower install
 
 install:
+	go-bindata assets/...
 	godep go install -tags=release
 
 test:
