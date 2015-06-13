@@ -1,5 +1,15 @@
 = content main
-  h2 Auth
+  h2 Authentication
+
+  p.help-block Get GitHub access token by Basic Authentication.
+    br
+    | User name and password are used only Basic Authentication.
+    br
+    | Token is saved as 
+    code $XDG_CACHE_HOME/gfm-viewer
+    | (in many case, 
+    code ~/.cache/gfm-viewer
+    | ).
 
   form.form-horizontal action="/auth" method="post"
     .form-group
