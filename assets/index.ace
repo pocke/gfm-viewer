@@ -10,7 +10,7 @@
   .panel.panel-default.hidden#md
     .panel-heading
       h3.panel-title#md-title
-    .panel-body#md-body
+    .panel-body#md-body.markdown-body
 
   .modal.fade#modal
     .modal-dialog
