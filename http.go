@@ -40,7 +40,7 @@ func NewServer(port int) *Server {
 	if DEBUG {
 		handler = hlog.Wrap(f.ServeHTTP)
 	}
-	url, err := serve(handler)
+	url, err := serve(handler, port)
 	if err != nil {
 		panic(err)
 	}
@@ -50,8 +50,9 @@ func NewServer(port int) *Server {
 	return s
 }
 
-func serve(f func(w http.ResponseWriter, r *http.Request)) (string, error) {
-	l, err := net.Listen("tcp", ":0")
+func serve(f func(w http.ResponseWriter, r *http.Request), port int) (string, error) {
+	p := fmt.Sprintf(":%d", port)
+	l, err := net.Listen("tcp", p)
 	if err != nil {
 		return "", err
 	}
