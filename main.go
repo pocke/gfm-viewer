@@ -7,7 +7,7 @@ import (
 
 func main() {
 	var port int
-	flag.IntVar(&port, "port", 1124, "TCP port number")
+	flag.IntVar(&port, "port", 0, "TCP port number")
 	flag.Parse()
 
 	files := flag.Args()

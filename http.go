@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 	"path"
-	"time"
 
 	"github.com/naoina/denco"
 	"github.com/pocke/hlog"
@@ -22,38 +22,44 @@ func NewServer(port int) *Server {
 		storage: NewStorage(),
 	}
 
-	go func() {
-		wsm := NewWSManager(s.storage.OnUpdate())
+	wsm := NewWSManager(s.storage.OnUpdate())
 
-		mux := denco.NewMux()
-		f, err := mux.Build([]denco.Handler{
-			mux.GET("/", s.indexHandler),
-			mux.POST("/auth", s.authHandler),
-			mux.GET("/files/*path", s.ServeFile),
-			mux.GET("/ws", func(w http.ResponseWriter, r *http.Request, _ denco.Params) { wsm.ServeHTTP(w, r) }),
-			mux.GET("/:type/:fname", s.serveAsset),
-		})
-		if err != nil {
-			panic(err)
-		}
-		handler := f.ServeHTTP
-		if DEBUG {
-			handler = hlog.Wrap(f.ServeHTTP)
-		}
-		http.HandleFunc("/", handler)
-		url := fmt.Sprintf("http://localhost:%d", port)
-		go func() {
-			err = http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
-			if err != nil {
-				panic(err)
-			}
-		}()
-		<-time.After(10 * time.Millisecond)
-		fmt.Printf("Open: %s\n", url)
-		open.Start(url)
-	}()
+	mux := denco.NewMux()
+	f, err := mux.Build([]denco.Handler{
+		mux.GET("/", s.indexHandler),
+		mux.POST("/auth", s.authHandler),
+		mux.GET("/files/*path", s.ServeFile),
+		mux.GET("/ws", func(w http.ResponseWriter, r *http.Request, _ denco.Params) { wsm.ServeHTTP(w, r) }),
+		mux.GET("/:type/:fname", s.serveAsset),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	handler := f.ServeHTTP
+	if DEBUG {
+		handler = hlog.Wrap(f.ServeHTTP)
+	}
+	url, err := serve(handler)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Open: %s\n", url)
+	open.Start(url)
 
 	return s
+}
+
+func serve(f func(w http.ResponseWriter, r *http.Request)) (string, error) {
+	l, err := net.Listen("tcp", ":0")
+	if err != nil {
+		return "", err
+	}
+	url := fmt.Sprintf("http://%s", l.Addr())
+	go func() {
+		http.Serve(l, http.HandlerFunc(f))
+	}()
+	return url, nil
 }
 
 // ServeFile serves parsed markdown.
