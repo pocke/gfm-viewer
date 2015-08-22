@@ -56,7 +56,7 @@ func serve(f func(w http.ResponseWriter, r *http.Request), port int) (string, er
 	if err != nil {
 		return "", err
 	}
-	url := fmt.Sprintf("http://%s", l.Addr())
+	url := fmt.Sprintf("http://127.0.0.1:%d", l.Addr().(*net.TCPAddr).Port)
 	go func() {
 		http.Serve(l, http.HandlerFunc(f))
 	}()
