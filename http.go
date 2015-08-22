@@ -51,7 +51,7 @@ func NewServer(port int) *Server {
 }
 
 func serve(f func(w http.ResponseWriter, r *http.Request), port int) (string, error) {
-	p := fmt.Sprintf("127.0.0.1:%d", port)
+	p := fmt.Sprintf(":%d", port)
 	l, err := net.Listen("tcp", p)
 	if err != nil {
 		return "", err
